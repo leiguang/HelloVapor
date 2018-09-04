@@ -15,7 +15,7 @@ public func routes(_ router: Router) throws {
     router.delete("todos", Todo.parameter, use: todoController.delete)
     
     
-    // leiguang practices
+    // MARK: - leiguang practices
     
     router.get("hello", "vapor") { req in
         return "Hello Vapor"
@@ -46,6 +46,11 @@ public func routes(_ router: Router) throws {
     router.post(UserInfoData.self, at: "user-info") { (req, data) in
         return "Hello \(data.name), your are \(data.age)"
     }
+    
+    // MARK: - Acronyms
+    
+    let acronymsController = AcronymsController()
+    try router.register(collection: acronymsController)
 }
 
 struct InfoData: Content {

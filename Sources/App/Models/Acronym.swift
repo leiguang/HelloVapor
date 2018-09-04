@@ -19,6 +19,17 @@ final class Acronym: Codable {
     }
 }
 
+extension Acronym: SQLiteModel {}
+extension Acronym: Content {}
+extension Acronym: Migration {}
+
+//extension Acronym: Model {
+//    typealias Database = SQLiteDatabase
+//    typealias ID = Int
+//    static let idKey: IDKey = \.id
+//}
+
+
 //struct Acronym: Codable {
 //    var id: Int?
 //    var short: String
@@ -29,13 +40,3 @@ final class Acronym: Codable {
 //        self.long = long
 //    }
 //}
-
-//extension Acronym: Model {
-//    typealias Database = SQLiteDatabase
-//    typealias ID = Int
-//    static let idKey: IDKey = \.id
-//}
-
-extension Acronym: SQLiteModel {}
-extension Acronym: Content {}
-extension Acronym: Migration {}
