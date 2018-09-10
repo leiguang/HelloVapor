@@ -24,13 +24,16 @@ final class Acronym: Codable {
 extension Acronym: SQLiteModel {}
 extension Acronym: Content {}
 extension Acronym: Migration {}
+extension Acronym: Parameter {}
 
 extension Acronym {
     var creator: Parent<Acronym, User> {
         return parent(\.creatorID)
     }
     
-    var categories: Siblings
+    var categories: Siblings<Acronym, Category, AcronymCategoryPivot> {
+        return siblings()
+    }
 }
 
 //extension Acronym: Model {
