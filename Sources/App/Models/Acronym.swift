@@ -12,10 +12,12 @@ final class Acronym: Codable {
     var id: Int?
     var short: String
     var long: String
-
-    init(short: String, long: String) {
+    var creatorID: User.ID
+    
+    init(short: String, long: String, creatorID: User.ID) {
         self.short = short
         self.long = long
+        self.creatorID = creatorID
     }
 }
 
@@ -23,20 +25,16 @@ extension Acronym: SQLiteModel {}
 extension Acronym: Content {}
 extension Acronym: Migration {}
 
+extension Acronym {
+    var creator: Parent<Acronym, User> {
+        return parent(\.creatorID)
+    }
+    
+    var categories: Siblings
+}
+
 //extension Acronym: Model {
 //    typealias Database = SQLiteDatabase
 //    typealias ID = Int
 //    static let idKey: IDKey = \.id
-//}
-
-
-//struct Acronym: Codable {
-//    var id: Int?
-//    var short: String
-//    var long: String
-//
-//    init(short: String, long: String) {
-//        self.short = short
-//        self.long = long
-//    }
 //}
