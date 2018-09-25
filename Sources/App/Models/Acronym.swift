@@ -5,7 +5,7 @@
 //  Created by 雷广 on 2018/9/4.
 //
 
-import FluentSQLite
+import FluentMySQL
 import Vapor
 
 final class Acronym: Codable {
@@ -21,7 +21,7 @@ final class Acronym: Codable {
     }
 }
 
-extension Acronym: SQLiteModel {}
+extension Acronym: MySQLModel {}
 extension Acronym: Content {}
 extension Acronym: Migration {}
 extension Acronym: Parameter {}

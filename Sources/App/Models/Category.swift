@@ -5,7 +5,7 @@
 //  Created by 雷广 on 2018/9/7.
 //
 
-import FluentSQLite
+import FluentMySQL
 import Vapor
 
 final class Category: Codable {
@@ -17,7 +17,7 @@ final class Category: Codable {
     }
 }
 
-extension Category: SQLiteModel {}
+extension Category: MySQLModel {}
 extension Category: Migration {}
 extension Category: Content {}
 extension Category: Parameter {}
