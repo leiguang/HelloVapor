@@ -6,6 +6,8 @@
 //
 
 import Vapor
+import Crypto
+import Authentication
 
 struct UsersController: RouteCollection {
     
@@ -13,22 +15,27 @@ struct UsersController: RouteCollection {
         let usersRoutes = router.grouped("api", "users")
         usersRoutes.post(use: createHandler)
         usersRoutes.get(use: getAllHandler)
-        usersRoutes.get(User.parameter, use: getHandler)
+        usersRoutes.get(User.Public.parameter, use: getHandler)
         usersRoutes.get(User.parameter, "acronyms", use: getAcronymsHandler)
+        
+        let basicAuthMiddleware = User.basicAuthMiddleware(using: PlaintextVerifier())
+        let basicAuthGroup = usersRoutes.grouped(basicAuthMiddleware)
+        basicAuthGroup.post("login", use: loginHandler)
     }
     
     func createHandler(_ req: Request) throws -> Future<User> {
         return try req.content.decode(User.self).flatMap(to: User.self) { user in
+            user.password = try BCrypt.hash(user.password)
             return user.save(on: req)
         }
     }
     
-    func getAllHandler(_ req: Request) throws -> Future<[User]> {
-        return User.query(on: req).all()
+    func getAllHandler(_ req: Request) throws -> Future<[User.Public]> {
+        return User.Public.query(on: req).all()
     }
 
-    func getHandler(_ req: Request) throws -> Future<User> {
-        return try req.parameters.next(User.self)
+    func getHandler(_ req: Request) throws -> Future<User.Public> {
+        return try req.parameters.next(User.Public.self)
     }
     
     func getAcronymsHandler(_ req: Request) throws -> Future<[Acronym]> {
@@ -36,4 +43,13 @@ struct UsersController: RouteCollection {
             return try user.acronyms.query(on: req).all()
         }
     }
+    
+    func loginHandler(req: Request) throws -> Future<Token> {
+        let user = try req.requireAuthenticated(User.self)
+        let token = try Token.generate(for: user)
+        return token.save(on: req)
+    }
 }
+
+extension User: Parameter {}
+extension User.Public: Parameter {}

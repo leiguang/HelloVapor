@@ -1,11 +1,12 @@
 import FluentMySQL
 import Vapor
 import Leaf
+import Authentication 
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
     /// Register providers first
-    try services.register(FluentMySQLProvider())
+    
 
     /// Register routes to the router
     let router = EngineRouter.default()
@@ -18,8 +19,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
 
-    
+    try services.register(FluentMySQLProvider())
     try services.register(LeafProvider())
+    try services.register(AuthenticationProvider())
     
     
     // Note:
@@ -50,6 +52,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: User.self, database: .mysql)
     migrations.add(model: Category.self, database: .mysql)
     migrations.add(model: AcronymCategoryPivot.self, database: .mysql)
+    migrations.add(model: Token.self, database: .mysql)
     services.register(migrations)
 
+    User.Public.defaultDatabase = .mysql
 }
