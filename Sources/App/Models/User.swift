@@ -55,3 +55,7 @@ extension User: BasicAuthenticatable {
     static let usernameKey: UsernameKey = \User.username
     static let passwordKey: PasswordKey = \User.password
 }
+
+extension User: TokenAuthenticatable {
+    typealias TokenType = Token
+}

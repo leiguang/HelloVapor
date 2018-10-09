@@ -8,6 +8,7 @@
 import Vapor
 import FluentMySQL
 import Crypto
+import Authentication
 
 final class Token: Codable {
     var id: UUID?
@@ -35,4 +36,13 @@ extension Token {
         let random = try CryptoRandom().generateData(count: 16)
         return try Token(token: random.base64EncodedString(), userID: user.requireID())
     }
+}
+
+extension Token: Authentication.Token {
+    static let userIDKey: UserIDKey = \Token.userID
+    typealias UserType = User
+}
+
+extension Token: BearerAuthenticatable {
+    static let tokenKey: TokenKey = \Token.token
 }
