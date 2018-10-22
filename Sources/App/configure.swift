@@ -1,10 +1,13 @@
 import FluentMySQL
 import Vapor
 import Leaf
-import Authentication 
+import Authentication
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
+    
+    config.prefer(MemoryKeyedCache.self, for: KeyedCache.self)
+    
     /// Register providers first
     try services.register(FluentMySQLProvider())
     try services.register(LeafProvider())
@@ -13,11 +16,12 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     /// Register middleware
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
     middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
-    middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
+//    middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
+    middlewares.use(SessionsMiddleware.self)
     services.register(middlewares)
 
-    
-    
+
+
     // Note:
     /*
      Fatal error: Error raised at top level: ⚠️ MySQL Error: Unsupported auth plugin: caching_sha2_password
@@ -29,7 +33,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
         docker run --name mysql -e MYSQL_USER=leiguang  -e MYSQL_PASSWORD=password -e MYSQL_DATABASE=vapor  -p 3306:3306 -d mysql/mysql-server:5.7
      ```
      */
-    
+
     // Configure a MySQL database
     let databaseConfig = MySQLDatabaseConfig(hostname: "localhost", port: 3306, username: "leiguang", password: "password", database: "vapor")
     let database = MySQLDatabase(config: databaseConfig)
@@ -50,8 +54,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register(migrations)
 
     User.Public.defaultDatabase = .mysql
-    
-    
+
+
     /// Register routes to the router
     let router = EngineRouter.default()
     try routes(router)
